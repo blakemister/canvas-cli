@@ -1,0 +1,18 @@
+{
+  "id": 66666,
+  "course_id": 99999,
+  "name": "Locked Assignment",
+  "html_url": "https://courses.example.edu/courses/99999/assignments/66666",
+  "due_at": "2099-12-31T23:59:00Z",
+  "lock_at": "2025-01-01T00:00:00Z",
+  "points_possible": 10,
+  "submission_types": ["online_text_entry"],
+  "allowed_extensions": [],
+  "published": true,
+  "locked_for_user": true,
+  "allowed_attempts": -1,
+  "submission": {
+    "submitted_at": null,
+    "workflow_state": "unsubmitted"
+  }
+}

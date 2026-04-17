@@ -1,0 +1,18 @@
+{
+  "id": 55555,
+  "course_id": 99999,
+  "name": "Past Due Assignment",
+  "html_url": "https://courses.example.edu/courses/99999/assignments/55555",
+  "due_at": "2020-01-01T00:00:00Z",
+  "lock_at": null,
+  "points_possible": 10,
+  "submission_types": ["online_text_entry"],
+  "allowed_extensions": [],
+  "published": true,
+  "locked_for_user": false,
+  "allowed_attempts": -1,
+  "submission": {
+    "submitted_at": null,
+    "workflow_state": "unsubmitted"
+  }
+}

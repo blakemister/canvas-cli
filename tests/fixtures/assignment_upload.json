@@ -1,0 +1,18 @@
+{
+  "id": 22222,
+  "course_id": 99999,
+  "name": "Test Lab Upload",
+  "html_url": "https://courses.example.edu/courses/99999/assignments/22222",
+  "due_at": "2099-12-31T23:59:00Z",
+  "lock_at": null,
+  "points_possible": 20,
+  "submission_types": ["online_upload"],
+  "allowed_extensions": ["ipynb", "py"],
+  "published": true,
+  "locked_for_user": false,
+  "allowed_attempts": -1,
+  "submission": {
+    "submitted_at": null,
+    "workflow_state": "unsubmitted"
+  }
+}
