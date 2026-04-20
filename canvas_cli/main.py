@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import sys
 
 import click
 from pathlib import Path
@@ -11,16 +12,32 @@ from .client import (
     get, get_paginated, download_file,
     create_client, async_get, async_get_paginated,
 )
-from .config import API_BASE
+from .config import API_BASE, require_base_url, save_config, show_config
 from .resolve import resolve_course
 from .output import success, error
 from .submit import submit as _submit_command
+
+
+# Commands that don't need a configured base_url (they manage config itself
+# or provide read-only diagnostic info).
+_CONFIG_EXEMPT_COMMANDS = {"config"}
 
 
 class ErrorHandlingGroup(click.Group):
     """Click group that catches CanvasError and outputs proper error envelopes."""
 
     def invoke(self, ctx):
+        # Fail fast if a network-touching command runs without base_url configured.
+        # Peek at argv directly to stay compatible across Click 8/9.
+        subcommand = next(
+            (a for a in sys.argv[1:] if not a.startswith("-")), None
+        )
+        if subcommand and subcommand not in _CONFIG_EXEMPT_COMMANDS:
+            try:
+                require_base_url()
+            except RuntimeError as e:
+                error("ConfigError", str(e), exit_code=2)
+
         try:
             return super().invoke(ctx)
         except AuthError as e:
@@ -484,3 +501,39 @@ def rubric(ctx, course, assignment_id):
 # --- Command 8: submit ---
 
 cli.add_command(_submit_command)
+
+
+# --- Command 9: config ---
+
+@cli.group()
+def config():
+    """Manage persistent CLI config at ~/.canvas-cli/config.json."""
+    pass
+
+
+@config.command("set")
+@click.argument("key")
+@click.argument("value")
+@click.pass_context
+def config_set(ctx, key, value):
+    """Persist a config value. Keys: base_url, cookie_file, token_refresh_script, upload_size_limit_mb."""
+    try:
+        save_config(key, value)
+    except ValueError as e:
+        error("ConfigError", str(e), exit_code=2)
+    if ctx.obj["json"]:
+        success(ctx, {"key": key, "value": value})
+    else:
+        click.echo(f"Saved: {key} = {value}")
+
+
+@config.command("show")
+@click.pass_context
+def config_show(ctx):
+    """Show effective config (env + file merged)."""
+    cfg = show_config()
+    if ctx.obj["json"]:
+        success(ctx, cfg)
+    else:
+        for k, v in cfg.items():
+            click.echo(f"{k}: {v or '(unset)'}")

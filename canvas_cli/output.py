@@ -18,7 +18,10 @@ def success(ctx, data, message=None):
 def error(error_type, message, exit_code=1):
     """Output error envelope and exit."""
     ctx = click.get_current_context(silent=True)
-    if ctx and ctx.obj.get("json"):
+    # Detect --json from ctx.obj if the group callback has run; otherwise
+    # fall back to argv so we emit a proper envelope during early-failure paths.
+    json_mode = bool(ctx and ctx.obj and ctx.obj.get("json")) or ("--json" in sys.argv)
+    if json_mode:
         click.echo(json.dumps({
             "success": False,
             "error": error_type,
